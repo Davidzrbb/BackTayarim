@@ -1,9 +1,11 @@
 import {config} from "dotenv";
 import express from "express";
 import http from "http";
-import {UserController} from "./controlers/userController";
-import {Presence} from "./models/Presence";
-import {PresenceControler} from "./controlers/presence.controler";
+import {UserController} from "./controlers/user.controller";
+import {ReservationController} from "./controlers/reservation.controller";
+import {PurchaseController} from "./controlers/purchase.controller";
+import {PaymentController} from "./controlers/payment.controller";
+
 
 
 config();
@@ -30,8 +32,14 @@ async function startServer(): Promise<void> {
     const userController = new UserController();
     app.use('/user', userController.buildRoutes());
 
-    const presenceController = new PresenceControler();
-    app.use('/presence', presenceController.buildRoutes());
+    const reservationController = new ReservationController();
+    app.use('/reservation', reservationController.buildRoutes());
+
+    const purchaseController = new PurchaseController();
+    app.use('/purchase', purchaseController.buildRoutes());
+
+    const paymentController = new PaymentController();
+    app.use('/payment', paymentController.buildRoutes());
 
     httpServer.listen(port, () => console.log(`Listening on port ${port}`));
 }

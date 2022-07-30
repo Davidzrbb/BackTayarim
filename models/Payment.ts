@@ -3,18 +3,30 @@ import {Model, DataTypes} from 'sequelize';
 const Sequelize = require('sequelize');
 const db = require('../utils/mysql.connector');
 
-export const User = db.define('User', {
-    idUser: {
+export const Payment = db.define('Payment', {
+    idPayment: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    login: {
-        type: Sequelize.STRING,
-        allowNull: false,
+    idReservation: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     },
-    password: {
+    userSend: {
         type: Sequelize.STRING,
+        allowNull: false
+    },
+    userReceipt: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    datePayment: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    amount: {
+        type: Sequelize.INTEGER,
         allowNull: false
     },
     createdAt: {
@@ -26,5 +38,4 @@ export const User = db.define('User', {
         allowNull: false
     }
 });
-module.exports = User;
-
+module.exports = Payment;

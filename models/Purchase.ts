@@ -3,23 +3,31 @@ import {Model, DataTypes} from 'sequelize';
 const Sequelize = require('sequelize');
 const db = require('../utils/mysql.connector');
 
-export const Presence = db.define('Presence', {
-    idPresence: {
+export const Purchase = db.define('Purchase', {
+    idPurchase: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    idUser: {
+    idReservation: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    dayPresence: {
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    datePurchase: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    validatePresence: {
+    image: {
+        type: Sequelize.BLOB,
+        allowNull: false
+    },
+    amount: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        allowNull: false
     },
     createdAt: {
         type: Sequelize.DATE,
@@ -30,5 +38,4 @@ export const Presence = db.define('Presence', {
         allowNull: false
     }
 });
-module.exports = Presence;
-
+module.exports = Purchase;
