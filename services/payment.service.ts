@@ -1,6 +1,5 @@
-import {Purchase} from "../models/Purchase";
-import {Payment} from "../models/Payment";
-
+const Purchase = require('../models/Purchase');
+const Payment = require('../models/Payment');
 const Reservation = require('../models/Reservation');
 
 export class PaymentService {
@@ -70,7 +69,8 @@ export class PaymentService {
     }
 
     async getTotal() {
-        const total = await Payment.findAll();
+
+        const total = Payment.findAll({where: {userReceipt: "yaron"}});
         let sum = 0;
         for (let i = 0; i < total.length; i++) {
             sum += total[i].amount;
@@ -80,6 +80,12 @@ export class PaymentService {
         for (let i = 0; i < totalPurchase.length; i++) {
             sumPurchase += totalPurchase[i].amount;
         }
-        return sum - sumPurchase;
+
+        const totalPayment = Payment.findAll({where: {userSend: "yaron"}});
+        let sumPayment = 0;
+        for (let i = 0; i < totalPayment.length; i++) {
+            sumPayment += totalPayment[i].amount;
+        }
+        return sum - (sumPurchase + sumPayment);
     }
 }

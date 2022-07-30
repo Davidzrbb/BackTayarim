@@ -2,7 +2,6 @@ import {Model, DataTypes} from 'sequelize';
 
 const Sequelize = require('sequelize');
 const db = require('../utils/mysql.connector');
-
 export const Payment = db.define('Payment', {
     idPayment: {
         type: Sequelize.INTEGER,
