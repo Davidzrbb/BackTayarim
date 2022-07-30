@@ -103,7 +103,6 @@ export class PaymentController {
         }
     }
 
-    //get Total is all  payment amount minus amout of all purchase
     async getTotal(req: Request, res: Response) {
         try {
             const total = await PaymentService.getInstance().getTotal();
