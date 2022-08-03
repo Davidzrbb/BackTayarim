@@ -6,6 +6,7 @@ export class ReservationController {
 
     async createReservation(req: Request, res: Response) {
         try {
+            console.log(req.body);
             const reservation = await ReservationService.getInstance().createReservation({
                 name: req.body.name,
                 dateStarted: req.body.dateStarted,

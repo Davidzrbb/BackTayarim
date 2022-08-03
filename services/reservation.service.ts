@@ -1,3 +1,7 @@
+
+const Payment = require('../models/Payment');
+const Purchase = require('../models/Purchase');
+
 const Reservation = require('../models/Reservation');
 
 export class ReservationService {
@@ -15,11 +19,12 @@ export class ReservationService {
     }
 
     public async createReservation(reservation: typeof Reservation): Promise<typeof Reservation> {
+        console.log(reservation);
         if (reservation.name === undefined || reservation.dateStarted === undefined || reservation.dateEnded === undefined || reservation.amount === undefined) {
             throw new Error("Missing parameters");
         }
 
-        if (reservation.name.match(/[^a-zA-Z\d]/g) || reservation.dateStarted.match(/[^a-zA-Z\d]/g) || reservation.dateEnded.match(/[^a-zA-Z\d]/g) || reservation.amount.match(/[^a-zA-Z\d]/g)) {
+        if (reservation.name.match(/[^a-zA-Z\d]/g) || reservation.amount.match(/[^a-zA-Z\d]/g)) {
             throw new Error("Invalid parameters");
         }
         if (reservation.amount < 0) {
@@ -28,6 +33,14 @@ export class ReservationService {
         if (reservation.dateStarted > reservation.dateEnded) {
             throw new Error("Invalid date");
         }
+        if (await Reservation.findOne({where: {name: reservation.name}})) {
+            throw new Error("Name reservation already exists");
+        }
+
+        reservation.dateStarted = new Date(reservation.dateStarted).setDate(new Date(reservation.dateStarted).getDate() + 1);
+        reservation.dateEnded = new Date(reservation.dateEnded).setDate(new Date(reservation.dateEnded).getDate() + 1);
+
+
         if (await Reservation.findOne({
             where: {
                 name: reservation.name,
@@ -48,9 +61,23 @@ export class ReservationService {
     }
 
     async deleteReservation(idReservation: number) {
+        if (idReservation === undefined) {
+            throw new Error("Missing parameters");
+        }
+        //si un achat est associé à cette réservation, on ne peut pas supprimer la réservation
+        if (await Purchase.findOne({where: {idReservation: idReservation}})) {
+            throw new Error("Vous devez déjà supprimer les achats associés à cette réservation");
+        }
+        if (await Payment.findOne({where: {idReservation: idReservation}})) {
+            throw new Error("Vous devez déjà supprimer les virements associés à cette réservation");
+        }
+
+        if (!await Reservation.findOne({where: {idReservation: idReservation}})) {
+            throw new Error("Reservation not found");
+        }
         return await Reservation.destroy({
             where: {
-                id: idReservation
+                idReservation: idReservation
             }
         });
 

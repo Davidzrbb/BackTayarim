@@ -11,7 +11,6 @@ export const Purchase = db.define('Purchase', {
     },
     idReservation: {
         type: Sequelize.INTEGER,
-        allowNull: false
     },
     name: {
         type: Sequelize.STRING,
@@ -22,7 +21,7 @@ export const Purchase = db.define('Purchase', {
         allowNull: false
     },
     image: {
-        type: Sequelize.BLOB,
+        type: Sequelize.STRING,
         allowNull: false
     },
     amount: {

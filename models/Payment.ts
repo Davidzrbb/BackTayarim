@@ -10,7 +10,6 @@ export const Payment = db.define('Payment', {
     },
     idReservation: {
         type: Sequelize.INTEGER,
-        allowNull: false
     },
     userSend: {
         type: Sequelize.STRING,

@@ -2,6 +2,7 @@ import express, {Request, Response, Router} from "express";
 import {PurchaseService} from "../services/purchase.service";
 import {PaymentService} from "../services/payment.service";
 import {Payment} from "../models/Payment";
+import {checkUserConnected} from "../middleware/checkUserConnected";
 
 
 export class PaymentController {
@@ -34,7 +35,7 @@ export class PaymentController {
             const payment = await PaymentService.getInstance().getAllPayment();
             res.send({
                 response: true,
-                purchase: payment
+                payment: payment
             });
         } catch (err) {
             console.log(err);
@@ -51,7 +52,7 @@ export class PaymentController {
             const payment = await PaymentService.getInstance().deletePayment(parseInt(req.params.idPayment));
             res.send({
                 response: true,
-                purchase: payment
+                payment: payment
             });
         } catch (err) {
             console.log(err);
@@ -127,7 +128,7 @@ export class PaymentController {
         router.delete('/delete/:idPayment', express.json(), this.deletePayment.bind(this));
         router.put('/update/:idPayment', express.json(), this.updatePayment.bind(this));
         router.get('/getById/:idPayment', express.json(), this.getPaymentById.bind(this));
-        router.get('/getTotal', express.json(), this.getTotal.bind(this));
+        router.get('/getTotal', checkUserConnected(), express.json(), this.getTotal.bind(this));
         return router;
     }
 }

@@ -18,28 +18,35 @@ export class PaymentService {
 
 
     async createPayement(param: { idReservation: any; amount: any; userReceipt: any; userSend: any; datePayment: any }) {
-        if (param.idReservation === undefined || param.amount === undefined || param.userReceipt === undefined || param.userSend === undefined || param.datePayment === undefined) {
+        console.log(param);
+        if (param.amount === undefined || param.userReceipt === undefined || param.userSend === undefined || param.datePayment === undefined) {
             throw new Error("Missing parameters");
         }
-        if (param.idReservation.length === 0 || param.amount.length === 0 || param.userReceipt.length === 0 || param.userSend.length === 0 || param.datePayment.length === 0) {
+        if (param.amount.length === 0 || param.userReceipt.length === 0 || param.userSend.length === 0 || param.datePayment.length === 0) {
             throw new Error("Missing parameters");
         }
-        if (param.idReservation.length > 50 || param.amount.length > 50 || param.userReceipt.length > 50 || param.userSend.length > 50 || param.datePayment.length > 50) {
+        if (param.amount.length > 50 || param.userReceipt.length > 50 || param.userSend.length > 50 || param.datePayment.length > 50) {
             throw new Error("Too long parameters");
         }
-        if (param.idReservation.match(/[^a-zA-Z\d]/g) || param.amount.match(/[^a-zA-Z\d]/g) || param.userReceipt.match(/[^a-zA-Z\d]/g) || param.userSend.match(/[^a-zA-Z\d]/g) || param.datePayment.match(/[^a-zA-Z\d]/g)) {
+        if (param.amount.match(/[^a-zA-Z\d]/g) || param.userReceipt.match(/[^a-zA-Z\d]/g) || param.userSend.match(/[^a-zA-Z\d]/g)) {
             throw new Error("Invalid parameters");
         }
 
-        if (await Reservation.findOne({where: {id: param.idReservation}})) {
-            throw new Error("Reservation not found");
+        if (param.idReservation != 0) {
+            if (!await Reservation.findOne({where: {idReservation: param.idReservation}})) {
+                throw new Error("Reservation not found");
+            }
+        } else {
+            param.idReservation = null;
         }
 
-        return await Purchase.create({
+        param.datePayment = new Date(param.datePayment).setDate(new Date(param.datePayment).getDate() + 1);
+
+        return await Payment.create({
             idReservation: param.idReservation,
             amount: param.amount,
-            userReceipt: param.userReceipt,
-            userSend: param.userSend,
+            userReceipt: param.userReceipt.toLowerCase(),
+            userSend: param.userSend.toLowerCase(),
             datePayment: param.datePayment
         });
     }
@@ -48,18 +55,18 @@ export class PaymentService {
         return await Payment.findAll();
     }
 
-    async deletePayment(idPayement: number) {
-        if (await Payment.findOne({where: {id: idPayement}})) {
+    async deletePayment(idPayment: number) {
+        if (!await Payment.findOne({where: {idPayment: idPayment}})) {
             throw new Error("Payment not found");
         }
-        return await Payment.destroy({where: {id: idPayement}});
+        return await Payment.destroy({where: {idPayment: idPayment}});
     }
 
     async updatePayment(idPayement: number, param2: { idReservation: any; amount: any; userReceipt: any; userSend: any; datePayment: any }) {
         if (await Payment.findOne({where: {id: idPayement}})) {
             throw new Error("Payment not found");
         }
-        return await Purchase.update({
+        return await Payment.update({
             idReservation: param2.idReservation,
             amount: param2.amount,
             userReceipt: param2.userReceipt,
@@ -70,18 +77,20 @@ export class PaymentService {
 
     async getTotal() {
 
-        const total = Payment.findAll({where: {userReceipt: "yaron"}});
+        const total = await Payment.findAll({where: {userReceipt: "yaron"}});
         let sum = 0;
         for (let i = 0; i < total.length; i++) {
             sum += total[i].amount;
         }
+
         const totalPurchase = await Purchase.findAll();
         let sumPurchase = 0;
         for (let i = 0; i < totalPurchase.length; i++) {
             sumPurchase += totalPurchase[i].amount;
         }
 
-        const totalPayment = Payment.findAll({where: {userSend: "yaron"}});
+        const totalPayment = await Payment.findAll({where: {userSend: "yaron"}});
+
         let sumPayment = 0;
         for (let i = 0; i < totalPayment.length; i++) {
             sumPayment += totalPayment[i].amount;
