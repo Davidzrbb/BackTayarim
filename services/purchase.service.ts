@@ -63,7 +63,7 @@ export class PurchaseService {
         }
         //destroy image
         let purchase = await Purchase.findOne({where: {idPurchase: idPurchase}});
-        if (purchase.image !== null) {
+        if (purchase.image !== null && purchase.image !== undefined && purchase.image !== "") {
             fs.unlinkSync(purchase.image);
         }
         return await Purchase.destroy({where: {idPurchase: idPurchase}});
